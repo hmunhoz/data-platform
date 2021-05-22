@@ -22,3 +22,11 @@ deploy-production:
 	cdk bootstrap && \
 	cdk deploy "*" \
 		--require-approval never
+
+synth-production:
+	export ENVIRONMENT=PRODUCTION  && \
+	cdk synth
+
+destroy-production:
+	export ENVIRONMENT=PRODUCTION  && \
+	cdk destroy "*" --require-approval never
