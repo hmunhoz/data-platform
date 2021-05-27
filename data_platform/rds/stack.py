@@ -4,6 +4,8 @@ from aws_cdk import (
     aws_ec2 as ec2
 )
 from data_platform.active_environment import active_environment
+from data_platform.definitions import db_name, db_password, db_username
+
 
 class RDSStack(core.Stack):
     def __init__(self, scope: core.Construct, vpc: ec2.Vpc, **kwargs):
@@ -43,14 +45,23 @@ class RDSStack(core.Stack):
             parameters={"rds.logical_replication": "1", "wal_sender_timeout": "0"},
         )
 
+        # Define Credentials
+        # Definetely Not best practice, as we should use secrets manager
+        # But we want to avoid extra costs in this demonstration
+        self.rds_credentials = rds.Credentials.from_password(
+            username=db_username,
+            password=core.SecretValue.plain_text(db_password)
+        )
+
         # Postgres DataBase Instance
         self.ecommerce_rds = rds.DatabaseInstance(
             self,
             id=f"rds-ecommerce-{self.deploy_env.value}",
-            database_name="ecommerce",
+            database_name=db_name,
             engine=rds.DatabaseInstanceEngine.postgres(
                 version=rds.PostgresEngineVersion.VER_12_4
             ),
+            credentials=self.rds_credentials,
             instance_type=ec2.InstanceType("t3.micro"),
             vpc=self.custom_vpc,
             instance_identifier=f"rds-{self.deploy_env.value}-ecommerce-db",
@@ -69,4 +80,15 @@ class RDSStack(core.Stack):
             **kwargs,
         )
 
+        self._rds_host = self.ecommerce_rds.db_instance_endpoint_address
+
+        self._rds_port = self.ecommerce_rds.db_instance_endpoint_port
+
+        @property
+        def rds_endpoint_address(self):
+            return self._rds_host
+
+        @property
+        def rds_endpoint_port(self):
+            return self._rds_port
 
