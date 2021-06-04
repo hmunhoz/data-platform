@@ -2,6 +2,7 @@ AWS_REGION=us-east-1
 STACK_NAME=data-science-fraud-detection
 BUCKET_NAME=ebanx-data-science
 
+
 deploy-dev:
 
 	export ENVIRONMENT=DEVELOP  && \

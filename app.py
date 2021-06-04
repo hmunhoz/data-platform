@@ -11,11 +11,18 @@ from aws_cdk import core
 from data_platform.common_stack import CommonResourcesStack
 from data_platform.data_lake.stack import DataLakeStack
 from data_platform.rds.stack import RDSStack
+from data_platform.dms.stack import DMSStack
 
 
 app = core.App()
 common_stack = CommonResourcesStack(app)
 data_lake_stack = DataLakeStack(app)
-rds_stack = RDSStack(app, vpc= common_stack.custom_vpc)
+rds_stack = RDSStack(app, vpc=common_stack.custom_vpc)
+dms_stack = DMSStack(
+    app,
+    common_stack=common_stack,
+    rds_stack=rds_stack,
+    data_lake_bronze_bucket=data_lake_stack.data_lake_bronze_bucket,
+)
 
 app.synth()

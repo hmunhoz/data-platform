@@ -3,9 +3,9 @@ from enum import Enum
 
 
 class Environment(Enum):
-    PRODUCTION = "production"
-    STAGING = "staging"
     DEVELOP = "develop"
+    STAGING = "staging"
+    PRODUCTION = "production"
 
 
 active_environment = Environment[os.environ["ENVIRONMENT"]]
