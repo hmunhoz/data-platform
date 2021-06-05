@@ -13,3 +13,6 @@ cdk.out
 
 .idea
 .DS_Store
+/scripts/old_definitions.py
+/scripts/clean_data_sets.py
+/scripts/datasets

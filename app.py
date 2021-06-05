@@ -12,7 +12,7 @@ from data_platform.common_stack import CommonResourcesStack
 from data_platform.data_lake.stack import DataLakeStack
 from data_platform.rds.stack import RDSStack
 from data_platform.dms.stack import DMSStack
-
+from data_platform.glue_catalog.stack import GlueCatalogStack
 
 app = core.App()
 common_stack = CommonResourcesStack(app)
@@ -24,5 +24,9 @@ dms_stack = DMSStack(
     rds_stack=rds_stack,
     data_lake_bronze_bucket=data_lake_stack.data_lake_bronze_bucket,
 )
-
+glue_stack = GlueCatalogStack(
+    app,
+    raw_data_lake_bucket=data_lake_stack.data_lake_bronze_bucket,
+    staged_data_lake_bucket=data_lake_stack.data_lake_silver_bucket,
+)
 app.synth()

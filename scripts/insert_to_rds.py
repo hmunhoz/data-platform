@@ -44,7 +44,9 @@ try:
         next(buff)
         # Insert data
         print("Inserting data")
-        cur.copy_from(buff, table_name, sep="|")
+        # cur.copy_from(buff, table_name, sep=",")
+        cur.copy_expert(f"COPY {table_name} FROM STDIN WITH (FORMAT CSV)", buff)
         print(f"Finished {db_name}\n")
 finally:
     conn.close()
+

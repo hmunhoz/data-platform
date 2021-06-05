@@ -46,7 +46,7 @@ class RDSStack(core.Stack):
         )
 
         # Define Credentials
-        # Definetely Not best practice, as we should use secrets manager
+        # Definitely Not best practice, as we should use secrets manager
         # But we want to avoid extra costs in this demonstration
         self.rds_credentials = rds.Credentials.from_password(
             username=db_username,

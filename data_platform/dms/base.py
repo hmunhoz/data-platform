@@ -94,9 +94,9 @@ class DMSEndpoints:
             extra_connection_attributes="DataFormat=parquet;maxFileSize=131072;timestampColumnName=extracted_at;includeOpForFullLoad=true;cdcMaxBatchInterval=120",
             s3_settings=dms.CfnEndpoint.S3SettingsProperty(
                 bucket_name=self.data_lake_bronze_bucket.bucket_name,
-                bucket_folder="ecommerce",
+                bucket_folder="ecommerce_rds",
                 compression_type="gzip",
-                csv_delimiter="|",
+                csv_delimiter=",",
                 csv_row_delimiter="\n",
                 service_access_role_arn=RawDMSRole(
                     scope, self.data_lake_bronze_bucket
@@ -125,7 +125,7 @@ class ReplicationInstance:
             replication_subnet_group_description="dms replication instance subnet group",
             subnet_ids=[
                 subnet.subnet_id
-                for subnet in self.common_stack.custom_vpc.private_subnets
+                for subnet in self.common_stack.custom_vpc.public_subnets # use public subnet to avoid costs
             ],
             replication_subnet_group_identifier=f"dms-{self.deploy_env.value}-replication-subnet",
         )
