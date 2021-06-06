@@ -30,4 +30,4 @@ synth-production:
 
 destroy-production:
 	export ENVIRONMENT=PRODUCTION  && \
-	cdk destroy "*" --require-approval never
+	cdk destroy "*" --force

@@ -13,6 +13,7 @@ from data_platform.data_lake.stack import DataLakeStack
 from data_platform.rds.stack import RDSStack
 from data_platform.dms.stack import DMSStack
 from data_platform.glue_catalog.stack import GlueCatalogStack
+from data_platform.athena.stack import AthenaStack
 
 app = core.App()
 common_stack = CommonResourcesStack(app)
@@ -29,4 +30,6 @@ glue_stack = GlueCatalogStack(
     raw_data_lake_bucket=data_lake_stack.data_lake_bronze_bucket,
     staged_data_lake_bucket=data_lake_stack.data_lake_silver_bucket,
 )
+athena_stack = AthenaStack(app)
+
 app.synth()
