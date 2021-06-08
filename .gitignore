@@ -16,3 +16,5 @@ cdk.out
 /scripts/old_definitions.py
 /scripts/clean_data_sets.py
 /scripts/datasets
+
+.ipynb_checkpoints
