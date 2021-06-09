@@ -14,6 +14,7 @@ from data_platform.rds.stack import RDSStack
 from data_platform.dms.stack import DMSStack
 from data_platform.glue_catalog.stack import GlueCatalogStack
 from data_platform.athena.stack import AthenaStack
+from data_platform.emr.stack import EMRClusterStack
 
 app = core.App()
 common_stack = CommonResourcesStack(app)
@@ -31,5 +32,6 @@ glue_stack = GlueCatalogStack(
     staged_data_lake_bucket=data_lake_stack.data_lake_silver_bucket,
 )
 athena_stack = AthenaStack(app)
+emr_stack = EMRClusterStack(app, common_stack, "b2s_geolocation.py")
 
 app.synth()

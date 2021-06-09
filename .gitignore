@@ -17,4 +17,4 @@ cdk.out
 /scripts/clean_data_sets.py
 /scripts/datasets
 
-.ipynb_checkpoints
+emr/.ipynb_checkpoints/

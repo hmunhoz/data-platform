@@ -1,7 +1,8 @@
 from aws_cdk import core
 from aws_cdk import (
     aws_ec2 as ec2,
-    aws_iam as iam
+    aws_iam as iam,
+    aws_s3 as s3,
 )
 from data_platform.active_environment import active_environment
 
@@ -33,3 +34,25 @@ class CommonResourcesStack(core.Stack):
         )
 
         self.custom_vpc.node.add_dependency(self.dms_vpc_management_role)
+
+        # Script Bucket
+        self.s3_script_bucket = s3.Bucket(
+            self,
+            id=f"script-bucket-{self.deploy_env.value}",
+            bucket_name=f"script-bucket-{self.deploy_env.value}-{self.account}-{self.region}",
+            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
+            encryption=s3.BucketEncryption.S3_MANAGED,
+            versioned=True,
+            **kwargs,
+        )
+
+        # Log bucket
+        self.s3_log_bucket = s3.Bucket(
+            self,
+            id=f"log-bucket-{self.deploy_env.value}",
+            bucket_name=f"log-bucket-{self.deploy_env.value}-{self.account}-{self.region}",
+            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
+            encryption=s3.BucketEncryption.S3_MANAGED,
+            versioned=True,
+            **kwargs,
+        )
