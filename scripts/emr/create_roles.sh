@@ -1,0 +1,1 @@
+aws emr create-default-roles
