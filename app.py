@@ -15,6 +15,7 @@ from data_platform.dms.stack import DMSStack
 from data_platform.glue_catalog.stack import GlueCatalogStack
 from data_platform.athena.stack import AthenaStack
 from data_platform.emr.stack import EMRClusterStack
+from data_platform.redshift.stack import RedshiftStack
 
 app = core.App()
 common_stack = CommonResourcesStack(app)
@@ -28,10 +29,18 @@ dms_stack = DMSStack(
 )
 glue_stack = GlueCatalogStack(
     app,
-    raw_data_lake_bucket=data_lake_stack.data_lake_bronze_bucket,
-    staged_data_lake_bucket=data_lake_stack.data_lake_silver_bucket,
+    data_lake_bronze_bucket=data_lake_stack.data_lake_bronze_bucket,
+    data_lake_silver_bucket=data_lake_stack.data_lake_silver_bucket,
+    data_lake_gold_bucket=data_lake_stack.data_lake_gold_bucket,
 )
 athena_stack = AthenaStack(app)
 emr_stack = EMRClusterStack(app, common_stack, "b2s_geolocation.py")
+
+redshift_stack = RedshiftStack(
+    app,
+    common_stack=common_stack,
+    data_lake_silver_bucket=data_lake_stack.data_lake_silver_bucket,
+    data_lake_gold_bucket=data_lake_stack.data_lake_gold_bucket,
+)
 
 app.synth()

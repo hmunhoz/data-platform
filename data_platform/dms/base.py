@@ -14,7 +14,10 @@ class RawDMSRole(iam.Role):
     """
 
     def __init__(
-        self, scope: core.Construct, data_lake_bronze_bucket: BaseDataLakeBucket, **kwargs
+        self,
+        scope: core.Construct,
+        data_lake_bronze_bucket: BaseDataLakeBucket,
+        **kwargs,
     ):
         self.deploy_env = active_environment
         self.data_lake_bronze_bucket = data_lake_bronze_bucket
@@ -29,7 +32,9 @@ class RawDMSRole(iam.Role):
         self.add_policy()
 
         self.add_managed_policy(
-            iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AmazonDMSVPCManagementRole")
+            iam.ManagedPolicy.from_aws_managed_policy_name(
+                "service-role/AmazonDMSVPCManagementRole"
+            )
         )
 
     def add_policy(self):
@@ -125,7 +130,7 @@ class ReplicationInstance:
             replication_subnet_group_description="dms replication instance subnet group",
             subnet_ids=[
                 subnet.subnet_id
-                for subnet in self.common_stack.custom_vpc.public_subnets # use public subnet to avoid costs
+                for subnet in self.common_stack.custom_vpc.public_subnets  # use public subnet to avoid costs
             ],
             replication_subnet_group_identifier=f"dms-{self.deploy_env.value}-replication-subnet",
         )
@@ -141,7 +146,6 @@ class ReplicationInstance:
             vpc_security_group_ids=[self.dms_sg.security_group_id],
             replication_subnet_group_identifier=self.dms_subnet_group.replication_subnet_group_identifier,
         )
-
 
         self.instance.node.add_dependency(self.dms_sg)
         self.instance.node.add_dependency(self.dms_subnet_group)
@@ -163,9 +167,14 @@ class ReplicationTask(dms.CfnReplicationTask):
         # self.s3_endpoint = dms_endpoints.s3_endpoint
         # self.instance = dms_replication_instance
 
-        self.endpoints = DMSEndpoints(scope=scope, rds_stack=rds_stack, data_lake_bronze_bucket=data_lake_bronze_bucket)
-        self.instance = ReplicationInstance(scope=scope, common_stack=common_stack).instance
-
+        self.endpoints = DMSEndpoints(
+            scope=scope,
+            rds_stack=rds_stack,
+            data_lake_bronze_bucket=data_lake_bronze_bucket,
+        )
+        self.instance = ReplicationInstance(
+            scope=scope, common_stack=common_stack
+        ).instance
 
         super().__init__(
             scope=scope,

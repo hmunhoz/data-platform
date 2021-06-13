@@ -1,0 +1,194 @@
+version: 2
+
+sources:
+  - name: data_lake_silver
+    schema: data_lake_silver
+    loader: RDS > PySpark
+
+    tables:
+      - name: customers
+        identifier: customers
+        description: '{{ doc("source_customers") }}'
+        column:
+          - name: customer_id
+            description: Key to the orders dataset. Each order has a unique customer_id.
+            tests:
+              - unique
+              - not_null
+          - name: customer_unique_id
+            description: Unique identifier of a customer.
+            tests:
+              - unique
+              - not_null
+          - name: customer_zip_code_prefix
+            description: First five digits of customer zip code.
+          - name: customer_city
+            description: Customer city name.
+          - name: customer_state
+            description: Customer state.
+
+      - name: geolocation
+        identifier: geolocation
+        description: '{{ doc("source_geolocation") }}'
+        column:
+          - name: geolocation_zip_code_prefix
+            description: First 5 digits of zip code
+          - name: geolocation_lat
+            description: Latitude
+          - name: geolocation_lng
+            description: Longitude
+          - name: geolocation_city
+            description: City name
+          - name: geolocation_state
+            description: State
+          - name: geolocation_zip_code_prefix_1
+            description: First digit of zip code
+          - name: geolocation_zip_code_prefix_2
+            description: First 2 digits of zip code
+          - name: geolocation_zip_code_prefix_3
+            description: First 3 digits of zip code
+          - name: geolocation_zip_code_prefix_4
+            description: First 4 digits of zip code
+
+      - name: order_items
+        identifier: order_items
+        description: '{{ doc("source_order_items") }}'
+        column:
+          - name: order_id
+            description: order unique identifier
+            tests:
+              - not_null
+          - name: order_item_qty
+            description: sequential number identifying number of items included in the same order.
+          - name: product_id
+            description: product unique identifier
+            tests:
+              - not_null
+          - name: seller_id
+            description: seller unique identifier
+            tests:
+              - not_null
+          - name: shipping_limit_date
+            description: Shows the seller shipping limit date for handling the order over to the logistic partner.
+          - name: price
+            description: item price
+          - name: freight_value
+            description: item freight value item (if an order has more than one item the freight value is splitted between items)
+          - name: order_item_id
+            description: order item unique identifier (row identifier)
+            tests:
+              - not_null
+              - unique
+
+
+      - name: order_payments
+        identifier: order_payments
+        description: '{{ doc("source_order_payments") }}'
+        column:
+          - name: order_id
+            description: unique identifier of an order
+            tests:
+              - not_null
+          - name: payment_sequential
+            description: a customer may pay an order with more than one payment method. If he does so, a sequence will be created
+          - name: payment_type
+            description: method of payment chosen by the customer
+          - name: payment_installments
+            description: number of installments chosen by the customer
+          - name: payment_value
+            description: transaction value
+
+
+      - name: order_reviews
+        identifier: order_reviews
+        description: '{{ doc("source_order_reviews") }}'
+        column:
+          - name: review_id
+            description: unique review identifier
+            tests:
+              - unique
+              - not_null
+          - name: order_id
+            description: unique order identifier
+          - name: review_score
+            description: Score ranging from 1 to 5 given by the customer on a satisfaction survey.
+            tests:
+              - accepted_values:
+                  values: [ 1, 2, 3, 4, 5 ]
+          - name: review_comment_title
+            description: Comment title from the review left by the customer, in Portuguese
+          - name: review_comment_message
+            description: Comment message from the review left by the customer, in Portuguese
+          - name: review_creation_date
+            description: Shows the date in which the satisfaction survey was sent to the customer
+          - name: review_answer_timestamp
+            description: Shows satisfaction survey answer timestamp
+
+      - name: orders
+        identifier: orders
+        description: '{{ doc("source_orders") }}'
+        column:
+          - name: order_id
+            description: unique identifier of the order
+            tests:
+              - unique
+              - not_null
+          - name: customer_id
+            description: key to the customer dataset. Each order has a unique customer_id
+            tests:
+              - not_null
+          - name: order_status
+            description: Reference to the order status (delivered, shipped, etc)
+          - name: order_purchase_timestamp
+            description: Shows the purchase timestamp for the order
+          - name: order_approved_at
+            description: Shows the payment approval timestamp
+          - name: order_delivered_carrier_date
+            description: Shows the order posting timestamp. When it was handled to the logistic partner
+          - name: order_delivered_customer_date
+            description: Shows the actual order delivery date to the customer
+          - name: order_estimated_delivery_date
+            description: Shows the estimated delivery date that was informed to customer at the purchase moment
+
+      - name: products
+        identifier: products
+        description: '{{ doc("source_products") }}'
+        column:
+          - name: product_id
+            description: unique product identifier
+            tests:
+              - unique
+              - not_null
+          - name: product_category_name
+            description: root category of product, in Portuguese
+          - name: product_name_length
+            description: number of characters extracted from the product name
+          - name: product_description_length
+            description: number of characters extracted from the product description
+          - name: product_photos_qty
+            description: number of product published photos
+          - name: product_weight_g
+            description: product weight measured in grams
+          - name: product_length_cm
+            description: product length measured in centimeters
+          - name: product_height_cm
+            description: product height measured in centimeters
+          - name: product_width_cm
+            description: product width measured in centimeters
+
+
+      - name: sellers
+        identifier: sellers
+        description: '{{ doc("source_sellers") }}'
+        column:
+          - name: seller_id
+            description: seller unique identifier
+            tests:
+              - unique
+              - not_null
+          - name: seller_zip_code_prefix
+            description: first 5 digits of seller zip code
+          - name: seller_city
+            description: seller city name
+          - name: seller_state
+            description: seller state

@@ -7,6 +7,7 @@ from aws_cdk import (
 
 Fn = core.Fn
 
+
 class DataLakeLayer(Enum):
     BRONZE = "bronze"
     SILVER = "silver"
@@ -18,9 +19,7 @@ class BaseDataLakeBucket(s3.Bucket):
         self.layer = layer
         self.deploy_env = scope.deploy_env
         self.account_id = scope.account
-        self.obj_name = (
-            f"datalake-{self.deploy_env.value}-{self.layer.value}"
-        )
+        self.obj_name = f"datalake-{self.deploy_env.value}-{self.layer.value}"
 
         super().__init__(
             scope,

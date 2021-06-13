@@ -49,4 +49,3 @@ try:
         print(f"Finished {db_name}\n")
 finally:
     conn.close()
-

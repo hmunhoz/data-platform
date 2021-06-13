@@ -1,8 +1,6 @@
+from enum import Enum
 from aws_cdk import core
-from aws_cdk import (
-    aws_glue as glue,
-    aws_iam as iam
-)
+from aws_cdk import aws_glue as glue, aws_iam as iam
 from data_platform.data_lake.base import BaseDataLakeBucket
 
 
@@ -42,30 +40,46 @@ class BaseDataLakeGlueDatabase(glue.Database):
 
 class BaseDataLakeGlueRole(iam.Role):
     def __init__(
-        self, scope: core.Construct, data_lake_bucket: BaseDataLakeBucket, **kwargs
+        self,
+        scope: core.Construct,
+        data_lake_bronze_bucket: BaseDataLakeBucket,
+        data_lake_silver_bucket: BaseDataLakeBucket,
+        data_lake_gold_bucket: BaseDataLakeBucket,
+        **kwargs,
     ) -> None:
-        self.data_lake_bucket = data_lake_bucket
+        self.data_lake_bronze_bucket = data_lake_bronze_bucket
+        self.data_lake_silver_bucket = data_lake_silver_bucket
+        self.data_lake_gold_bucket = data_lake_gold_bucket
         self.deploy_env = scope.deploy_env
-        self.layer = self.data_lake_bucket.layer
         super().__init__(
             scope,
-            id=f"iam-{self.deploy_env.value}-glue-data-lake-{self.layer.value}-role",
+            id=f"iam-{self.deploy_env.value}-glue-data-lake-role",
             assumed_by=iam.ServicePrincipal("glue.amazonaws.com"),
-            description=f"Allows using Glue on Data Lake {self.layer.value}",
+            description=f"Allows using Glue on Data Lake",
         )
-        self.bucket_arn = self.data_lake_bucket.bucket_arn
+        self.bronze_bucket_arn = self.data_lake_bronze_bucket.bucket_arn
+        self.silver_bucket_arn = self.data_lake_silver_bucket.bucket_arn
+        self.gold_bucket_arn = self.data_lake_gold_bucket.bucket_arn
+
         self.add_policy()
         self.add_instance_profile()
 
     def add_policy(self):
         policy = iam.Policy(
             self,
-            id=f"iam-{self.deploy_env.value}-glue-data-lake-{self.layer.value}-policy",
-            policy_name=f"iam-{self.deploy_env.value}-glue-data-lake-{self.layer.value}-policy",
+            id=f"iam-{self.deploy_env.value}-glue-data-lake-policy",
+            policy_name=f"iam-{self.deploy_env.value}-glue-data-lake-policy",
             statements=[
                 iam.PolicyStatement(
                     actions=["s3:ListBucket", "s3:GetObject", "s3:PutObject"],
-                    resources=[self.bucket_arn, f"{self.bucket_arn}/*"],
+                    resources=[
+                        self.bronze_bucket_arn,
+                        f"{self.bronze_bucket_arn}/*",
+                        self.silver_bucket_arn,
+                        f"{self.silver_bucket_arn}/*",
+                        self.gold_bucket_arn,
+                        f"{self.gold_bucket_arn}/*",
+                    ],
                 ),
                 iam.PolicyStatement(
                     actions=["cloudwatch:PutMetricData"],
@@ -87,8 +101,8 @@ class BaseDataLakeGlueRole(iam.Role):
     def add_instance_profile(self):
         iam.CfnInstanceProfile(
             self,
-            id=f"iam-{self.deploy_env.value}-glue-data-lake-{self.layer.value}-instance-profile",
-            instance_profile_name=f"iam-{self.deploy_env.value}-glue-data-lake-{self.layer.value}-instance-profile",
+            id=f"iam-{self.deploy_env.value}-glue-data-lake-instance-profile",
+            instance_profile_name=f"iam-{self.deploy_env.value}-glue-data-lake-instance-profile",
             roles=[self.role_name],
         )
 

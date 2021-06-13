@@ -1,8 +1,5 @@
 from aws_cdk import core
-from aws_cdk import (
-    aws_rds as rds,
-    aws_ec2 as ec2
-)
+from aws_cdk import aws_rds as rds, aws_ec2 as ec2
 from data_platform.active_environment import active_environment
 from data_platform.definitions import db_name, db_password, db_username
 
@@ -19,19 +16,18 @@ class RDSStack(core.Stack):
             id=f"sg-rds-ecommerce-{self.deploy_env.value}",
             vpc=self.custom_vpc,
             allow_all_outbound=True,
-            security_group_name=f"rds-ecommerce-{self.deploy_env.value}-sg"
+            security_group_name=f"rds-ecommerce-{self.deploy_env.value}-sg",
         )
 
         # Security Group Ingress Rules (Public)
         self.sg_ecommerce_rds.add_ingress_rule(
-            peer=ec2.Peer.ipv4("0.0.0.0/0"),
-            connection=ec2.Port.tcp(5432)
+            peer=ec2.Peer.ipv4("0.0.0.0/0"), connection=ec2.Port.tcp(5432)
         )
 
         for subnet in self.custom_vpc.private_subnets:
             self.sg_ecommerce_rds.add_ingress_rule(
                 peer=ec2.Peer.ipv4(subnet.ipv4_cidr_block),
-                connection=ec2.Port.tcp(5432)
+                connection=ec2.Port.tcp(5432),
             )
 
         # Parameter Group - parameters to read rds with dms
@@ -49,8 +45,7 @@ class RDSStack(core.Stack):
         # Definitely Not best practice, as we should use secrets manager
         # But we want to avoid extra costs in this demonstration
         self.rds_credentials = rds.Credentials.from_password(
-            username=db_username,
-            password=core.SecretValue.plain_text(db_password)
+            username=db_username, password=core.SecretValue.plain_text(db_password)
         )
 
         # Postgres DataBase Instance
@@ -91,4 +86,3 @@ class RDSStack(core.Stack):
         @property
         def rds_endpoint_port(self):
             return self._rds_port
-

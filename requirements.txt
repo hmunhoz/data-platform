@@ -17,3 +17,4 @@ pandas==1.2.4
 psycopg2-binary==2.8.6
 pytest==6.2.4
 requests==2.25.1
+dbt==0.19.1

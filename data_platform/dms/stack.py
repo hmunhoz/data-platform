@@ -13,12 +13,12 @@ from data_platform.active_environment import active_environment
 
 class DMSStack(core.Stack):
     def __init__(
-            self,
-            scope: core.Construct,
-            common_stack: CommonResourcesStack,
-            rds_stack: RDSStack,
-            data_lake_bronze_bucket: BaseDataLakeBucket,
-            **kwargs,
+        self,
+        scope: core.Construct,
+        common_stack: CommonResourcesStack,
+        rds_stack: RDSStack,
+        data_lake_bronze_bucket: BaseDataLakeBucket,
+        **kwargs,
     ) -> None:
         self.deploy_env = active_environment
         self.data_lake_bronze_bucket = data_lake_bronze_bucket
@@ -34,4 +34,9 @@ class DMSStack(core.Stack):
         #                 scope=scope, common_stack=common_stack
         #             ),
 
-        self.dms_replication_task = ReplicationTask(self, common_stack=common_stack, rds_stack=rds_stack, data_lake_bronze_bucket=data_lake_bronze_bucket)
+        self.dms_replication_task = ReplicationTask(
+            self,
+            common_stack=common_stack,
+            rds_stack=rds_stack,
+            data_lake_bronze_bucket=data_lake_bronze_bucket,
+        )

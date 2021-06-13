@@ -25,7 +25,9 @@ class EMRClusterStack(core.Stack):
         # enable reading scripts from s3 bucket
         read_scripts_policy = iam.PolicyStatement(
             effect=iam.Effect.ALLOW,
-            actions=["s3:GetObject",],
+            actions=[
+                "s3:GetObject",
+            ],
             resources=[f"arn:aws:s3:::{self.s3_script_bucket.bucket_name}/*"],
         )
         read_scripts_document = iam.PolicyDocument()
@@ -69,14 +71,14 @@ class EMRClusterStack(core.Stack):
             "emr_cluster",
             instances=emr.CfnCluster.JobFlowInstancesConfigProperty(
                 core_instance_group=emr.CfnCluster.InstanceGroupConfigProperty(
-                    instance_count=1, instance_type="m4.large", market="ON_DEMAND"
+                    instance_count=2, instance_type="m5.xlarge", market="ON_DEMAND"
                 ),
                 ec2_subnet_id=common_stack.custom_vpc.public_subnets[0].subnet_id,
                 hadoop_version="Amazon",
-                keep_job_flow_alive_when_no_steps=True,
+                keep_job_flow_alive_when_no_steps=False,
                 termination_protected=False,
                 master_instance_group=emr.CfnCluster.InstanceGroupConfigProperty(
-                    instance_count=1, instance_type="m4.large", market="ON_DEMAND"
+                    instance_count=1, instance_type="m5.xlarge", market="ON_DEMAND"
                 ),
             ),
             bootstrap_actions=[
@@ -84,7 +86,7 @@ class EMRClusterStack(core.Stack):
                     name="install_python_libraries",
                     script_bootstrap_action=emr.CfnCluster.ScriptBootstrapActionConfigProperty(
                         path="s3://script-bucket-production-034832733803-us-east-1/bootstrap_emr.sh"
-                    )
+                    ),
                 )
             ],
             # note job_flow_role is an instance profile (not an iam role)

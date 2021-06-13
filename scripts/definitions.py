@@ -125,14 +125,30 @@ sql_list = [
 
 # DATA URLs (Public S3)
 product_category_name_url = "https://ecommerce-olist-datasets.s3.amazonaws.com/product_category_name_translation.csv"
-customers_url = "https://ecommerce-olist-datasets.s3.amazonaws.com/olist_customers_dataset.csv"
-geolocation_url = "https://ecommerce-olist-datasets.s3.amazonaws.com/olist_geolocation_dataset.csv"
-order_items_url = "https://ecommerce-olist-datasets.s3.amazonaws.com/olist_order_items_dataset.csv"
-order_payments_url = "https://ecommerce-olist-datasets.s3.amazonaws.com/olist_order_payments_dataset.csv"
-order_reviews_url = "https://ecommerce-olist-datasets.s3.amazonaws.com/olist_order_reviews_dataset.csv"
-orders_url = "https://ecommerce-olist-datasets.s3.amazonaws.com/olist_orders_dataset.csv"
-products_url = "https://ecommerce-olist-datasets.s3.amazonaws.com/olist_products_dataset.csv"
-sellers_url = "https://ecommerce-olist-datasets.s3.amazonaws.com/olist_sellers_dataset.csv"
+customers_url = (
+    "https://ecommerce-olist-datasets.s3.amazonaws.com/olist_customers_dataset.csv"
+)
+geolocation_url = (
+    "https://ecommerce-olist-datasets.s3.amazonaws.com/olist_geolocation_dataset.csv"
+)
+order_items_url = (
+    "https://ecommerce-olist-datasets.s3.amazonaws.com/olist_order_items_dataset.csv"
+)
+order_payments_url = (
+    "https://ecommerce-olist-datasets.s3.amazonaws.com/olist_order_payments_dataset.csv"
+)
+order_reviews_url = (
+    "https://ecommerce-olist-datasets.s3.amazonaws.com/olist_order_reviews_dataset.csv"
+)
+orders_url = (
+    "https://ecommerce-olist-datasets.s3.amazonaws.com/olist_orders_dataset.csv"
+)
+products_url = (
+    "https://ecommerce-olist-datasets.s3.amazonaws.com/olist_products_dataset.csv"
+)
+sellers_url = (
+    "https://ecommerce-olist-datasets.s3.amazonaws.com/olist_sellers_dataset.csv"
+)
 
 url_list = [
     geolocation_url,
@@ -158,4 +174,3 @@ table_names_list = [
     f"{db_name}.order_items",
     f"{db_name}.order_payments",
 ]
-
