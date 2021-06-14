@@ -9,7 +9,8 @@ select
     product_id::varchar,
     seller_id::varchar,
     shipping_limit_date::date,
-    price::decimal as price,
+    price::decimal as unit_price,
     freight_value::decimal as freight_value,
-    order_item_id::varchar
+    order_item_id::varchar,
+    round((unit_price* + freight_value), 2)::decimal as gmv
 from source

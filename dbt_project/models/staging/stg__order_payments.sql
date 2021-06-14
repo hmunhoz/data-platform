@@ -5,6 +5,6 @@ with source as (
 )
 select
     order_id::varchar,
-    payment_type::varchar,
+    lower(payment_type)::varchar as payment_type,
     payment_installments::int
 from source
