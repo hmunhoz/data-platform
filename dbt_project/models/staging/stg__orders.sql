@@ -12,5 +12,8 @@ select
     order_delivered_carrier_date::date,
     order_delivered_customer_date::date,
     order_estimated_delivery_date::date,
-    order_purchase_date::date
+    order_purchase_date::date,
+    extract (year from order_purchase_date)::int as order_purchase_year,
+    extract (month from order_purchase_date)::int as order_purchase_month,
+    extract (quarter from order_purchase_date)::int as order_purchase_quarter
 from source

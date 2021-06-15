@@ -6,7 +6,7 @@ with source as (
 select
     customer_id::varchar,
     customer_unique_id::varchar,
-    customer_zip_code_prefix:varchar,
+    customer_zip_code_prefix::varchar,
     customer_city::varchar,
-    customer_state::varchar,
+    customer_state::varchar
 from source

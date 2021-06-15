@@ -4,7 +4,7 @@ with source as (
 
 )
 select
-    product_id::varchar
+    product_id::varchar,
     lower(product_category_name)::varchar as product_category_name,
     product_name_length::int,
     product_description_length::int,

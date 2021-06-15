@@ -9,7 +9,7 @@ sources:
       - name: customers
         identifier: customers
         description: '{{ doc("source_customers") }}'
-        column:
+        columns:
           - name: customer_id
             description: Key to the orders dataset. Each order has a unique customer_id.
             tests:
@@ -30,7 +30,7 @@ sources:
       - name: geolocation
         identifier: geolocation
         description: '{{ doc("source_geolocation") }}'
-        column:
+        columns:
           - name: geolocation_zip_code_prefix
             description: First 5 digits of zip code
           - name: geolocation_lat
@@ -53,7 +53,7 @@ sources:
       - name: order_items
         identifier: order_items
         description: '{{ doc("source_order_items") }}'
-        column:
+        columns:
           - name: order_id
             description: order unique identifier
             tests:
@@ -84,7 +84,7 @@ sources:
       - name: order_payments
         identifier: order_payments
         description: '{{ doc("source_order_payments") }}'
-        column:
+        columns:
           - name: order_id
             description: unique identifier of an order
             tests:
@@ -102,7 +102,7 @@ sources:
       - name: order_reviews
         identifier: order_reviews
         description: '{{ doc("source_order_reviews") }}'
-        column:
+        columns:
           - name: review_id
             description: unique review identifier
             tests:
@@ -127,7 +127,7 @@ sources:
       - name: orders
         identifier: orders
         description: '{{ doc("source_orders") }}'
-        column:
+        columns:
           - name: order_id
             description: unique identifier of the order
             tests:
@@ -153,7 +153,7 @@ sources:
       - name: products
         identifier: products
         description: '{{ doc("source_products") }}'
-        column:
+        columns:
           - name: product_id
             description: unique product identifier
             tests:
@@ -180,7 +180,7 @@ sources:
       - name: sellers
         identifier: sellers
         description: '{{ doc("source_sellers") }}'
-        column:
+        columns:
           - name: seller_id
             description: seller unique identifier
             tests:

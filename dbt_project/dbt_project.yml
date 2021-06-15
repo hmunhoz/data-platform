@@ -34,5 +34,5 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   bind: false
   staging:
-    schema: analytics_staging
+    schema: analytics_gold
     materialized: view
