@@ -30,9 +30,34 @@ The tables _olist_orders_dataset_ and _olist_order_items_dataset_ compose what w
 ## Methodology
 
 
-## Project directory structure
+## Project structure
 
-
+```
+├── Makefile           <- Makefile with commands like `make deploy-stack` or `make destroy-stack`
+├── README.md          <- The top-level README for developers using this project.
+├── data_platform
+│   ├── airflow_mwaa    <- airflow IaC resources.
+│   ├── athena          <- athena IaC resources.
+│   ├── data_lake       <- data lake (s3 buckets) IaC resources.
+│   ├── dms             <- Data Migration Services IaC resources.
+│   ├── emr             <- Elastic Map Reduce IaC resources.
+│   ├── glue_catalog    <- Glue Crawlers IaC resources.
+│   ├── rds             <- RDS IaC resources.
+│   ├── redshift        <- Redshift data warehouse cluster IaC resources.
+│   ├── common_stack.py <- Network Resources and Default Roles IaC resources.
+│   └── definitions.py  <- Default RDS settings.
+│
+├── dbt_project         <- directory with dbt files and resources (check models/)
+│
+├── images              <- README.md resources
+│
+├── metabase            <- metabase docker instructions
+│
+├── app.py              <- AWS cdk app. Defines CloudFormation resources and dependencies.
+│
+└── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
+                          generated with `pip freeze > requirements.txt`
+```
 
 ## How to run this project 
 
@@ -75,6 +100,8 @@ Now, you can issue the following commands in order to deploy the AWS Stack/Infra
 ```
 $ make deploy-production
 ```
+
+
 
 ## Improvements
 
