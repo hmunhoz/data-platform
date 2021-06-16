@@ -29,10 +29,12 @@ class CommonResourcesStack(core.Stack):
 
         # VPC
         self.custom_vpc = ec2.Vpc(
-            self, id=f"vpc-{self.deploy_env.value}", nat_gateways=0, vpn_gateway=False
+            self, id=f"vpc-{self.deploy_env.value}"
         )
 
+
         self.custom_vpc.node.add_dependency(self.dms_vpc_management_role)
+
 
         # Script Bucket
         self.s3_script_bucket = s3.Bucket(
@@ -54,4 +56,47 @@ class CommonResourcesStack(core.Stack):
             encryption=s3.BucketEncryption.S3_MANAGED,
             versioned=True,
             **kwargs,
+        )
+
+        # EMR Roles
+        self.read_scripts_policy = iam.PolicyStatement(
+            effect=iam.Effect.ALLOW,
+            actions=[
+                "s3:GetObject",
+            ],
+            resources=[f"arn:aws:s3:::{self.s3_script_bucket.bucket_name}/*"],
+        )
+        self.read_scripts_document = iam.PolicyDocument()
+        self.read_scripts_document.add_statements(self.read_scripts_policy)
+
+        # emr service role
+        self.emr_service_role = iam.Role(
+            self,
+            "emr_service_role",
+            assumed_by=iam.ServicePrincipal("elasticmapreduce.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "service-role/AmazonElasticMapReduceRole"
+                )
+            ],
+            inline_policies=[self.read_scripts_document],
+        )
+
+        # emr job flow role
+        self.emr_job_flow_role = iam.Role(
+            self,
+            "emr_job_flow_role",
+            assumed_by=iam.ServicePrincipal("ec2.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "service-role/AmazonElasticMapReduceforEC2Role"
+                )
+            ],
+        )
+        # emr job flow profile
+        self.emr_job_flow_profile = iam.CfnInstanceProfile(
+            self,
+            "emr_job_flow_profile",
+            roles=[self.emr_job_flow_role.role_name],
+            instance_profile_name="emrJobFlowProfile",
         )

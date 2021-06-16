@@ -14,8 +14,9 @@ from data_platform.rds.stack import RDSStack
 from data_platform.dms.stack import DMSStack
 from data_platform.glue_catalog.stack import GlueCatalogStack
 from data_platform.athena.stack import AthenaStack
-from data_platform.emr.stack import EMRClusterStack
+from data_platform.emr.stack import EMRStack
 from data_platform.redshift.stack import RedshiftStack
+from data_platform.airflow_mwaa.stack import AirflowStack
 
 app = core.App()
 common_stack = CommonResourcesStack(app)
@@ -34,13 +35,19 @@ glue_stack = GlueCatalogStack(
     data_lake_gold_bucket=data_lake_stack.data_lake_gold_bucket,
 )
 athena_stack = AthenaStack(app)
-emr_stack = EMRClusterStack(app, common_stack, "b2s_geolocation.py")
+# emr_stack = EMRStack(app, common_stack, "b2s_geolocation.py")
 
 redshift_stack = RedshiftStack(
     app,
     common_stack=common_stack,
     data_lake_silver_bucket=data_lake_stack.data_lake_silver_bucket,
     data_lake_gold_bucket=data_lake_stack.data_lake_gold_bucket,
+)
+airflow_stack = AirflowStack(
+    app,
+    common_stack=common_stack,
+    data_lake_bronze_bucket=data_lake_stack.data_lake_bronze_bucket,
+    data_lake_silver_bucket=data_lake_stack.data_lake_silver_bucket
 )
 
 app.synth()

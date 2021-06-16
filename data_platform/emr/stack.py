@@ -8,7 +8,7 @@ from data_platform.common_stack import CommonResourcesStack
 from data_platform.active_environment import active_environment
 
 
-class EMRClusterStack(core.Stack):
+class EMRStack(core.Stack):
     def __init__(
         self,
         scope: core.Construct,
@@ -65,79 +65,79 @@ class EMRClusterStack(core.Stack):
             instance_profile_name="emrJobFlowProfile",
         )
 
-        # create emr cluster
-        emr.CfnCluster(
-            self,
-            "emr_cluster",
-            instances=emr.CfnCluster.JobFlowInstancesConfigProperty(
-                core_instance_group=emr.CfnCluster.InstanceGroupConfigProperty(
-                    instance_count=2, instance_type="m5.xlarge", market="ON_DEMAND"
-                ),
-                ec2_subnet_id=common_stack.custom_vpc.public_subnets[0].subnet_id,
-                hadoop_version="Amazon",
-                keep_job_flow_alive_when_no_steps=False,
-                termination_protected=False,
-                master_instance_group=emr.CfnCluster.InstanceGroupConfigProperty(
-                    instance_count=1, instance_type="m5.xlarge", market="ON_DEMAND"
-                ),
-            ),
-            bootstrap_actions=[
-                emr.CfnCluster.BootstrapActionConfigProperty(
-                    name="install_python_libraries",
-                    script_bootstrap_action=emr.CfnCluster.ScriptBootstrapActionConfigProperty(
-                        path="s3://script-bucket-production-034832733803-us-east-1/bootstrap_emr.sh"
-                    ),
-                )
-            ],
-            # note job_flow_role is an instance profile (not an iam role)
-            job_flow_role=emr_job_flow_profile.ref,
-            name=f"emr-cluster-{self.deploy_env}",
-            applications=[emr.CfnCluster.ApplicationProperty(name="Spark")],
-            service_role=emr_service_role.role_name,
-            configurations=[
-                # use python3 for pyspark
-                emr.CfnCluster.ConfigurationProperty(
-                    classification="spark-env",
-                    configurations=[
-                        emr.CfnCluster.ConfigurationProperty(
-                            classification="export",
-                            configuration_properties={
-                                "PYSPARK_PYTHON": "/usr/bin/python3",
-                                "PYSPARK_DRIVER_PYTHON": "/usr/bin/python3",
-                            },
-                        )
-                    ],
-                ),
-                # enable apache arrow
-                emr.CfnCluster.ConfigurationProperty(
-                    classification="spark-defaults",
-                    configuration_properties={
-                        "spark.sql.execution.arrow.enabled": "true"
-                    },
-                ),
-                # dedicate cluster to single jobs
-                emr.CfnCluster.ConfigurationProperty(
-                    classification="spark",
-                    configuration_properties={"maximizeResourceAllocation": "true"},
-                ),
-            ],
-            log_uri=f"s3://{self.s3_log_bucket.bucket_name}/elasticmapreduce/",
-            release_label="emr-6.0.0",
-            visible_to_all_users=True,
-            # the job to be done
-            steps=[
-                emr.CfnCluster.StepConfigProperty(
-                    hadoop_jar_step=emr.CfnCluster.HadoopJarStepConfigProperty(
-                        jar="command-runner.jar",
-                        args=[
-                            "spark-submit",
-                            "--deploy-mode",
-                            "cluster",
-                            f"s3://{self.s3_script_bucket.bucket_name}/{spark_script}",
-                        ],
-                    ),
-                    name="bronze_to_silver",
-                    action_on_failure="CONTINUE",
-                ),
-            ],
-        )
+        # # create emr cluster
+        # emr.CfnCluster(
+        #     self,
+        #     "emr_cluster",
+        #     instances=emr.CfnCluster.JobFlowInstancesConfigProperty(
+        #         core_instance_group=emr.CfnCluster.InstanceGroupConfigProperty(
+        #             instance_count=2, instance_type="m5.xlarge", market="ON_DEMAND"
+        #         ),
+        #         ec2_subnet_id=common_stack.custom_vpc.public_subnets[0].subnet_id,
+        #         hadoop_version="Amazon",
+        #         keep_job_flow_alive_when_no_steps=False,
+        #         termination_protected=False,
+        #         master_instance_group=emr.CfnCluster.InstanceGroupConfigProperty(
+        #             instance_count=1, instance_type="m5.xlarge", market="ON_DEMAND"
+        #         ),
+        #     ),
+        #     bootstrap_actions=[
+        #         emr.CfnCluster.BootstrapActionConfigProperty(
+        #             name="install_python_libraries",
+        #             script_bootstrap_action=emr.CfnCluster.ScriptBootstrapActionConfigProperty(
+        #                 path="s3://script-bucket-production-034832733803-us-east-1/bootstrap_emr.sh"
+        #             ),
+        #         )
+        #     ],
+        #     # note job_flow_role is an instance profile (not an iam role)
+        #     job_flow_role=emr_job_flow_profile.ref,
+        #     name=f"emr-cluster-{self.deploy_env}",
+        #     applications=[emr.CfnCluster.ApplicationProperty(name="Spark")],
+        #     service_role=emr_service_role.role_name,
+        #     configurations=[
+        #         # use python3 for pyspark
+        #         emr.CfnCluster.ConfigurationProperty(
+        #             classification="spark-env",
+        #             configurations=[
+        #                 emr.CfnCluster.ConfigurationProperty(
+        #                     classification="export",
+        #                     configuration_properties={
+        #                         "PYSPARK_PYTHON": "/usr/bin/python3",
+        #                         "PYSPARK_DRIVER_PYTHON": "/usr/bin/python3",
+        #                     },
+        #                 )
+        #             ],
+        #         ),
+        #         # enable apache arrow
+        #         emr.CfnCluster.ConfigurationProperty(
+        #             classification="spark-defaults",
+        #             configuration_properties={
+        #                 "spark.sql.execution.arrow.enabled": "true"
+        #             },
+        #         ),
+        #         # dedicate cluster to single jobs
+        #         emr.CfnCluster.ConfigurationProperty(
+        #             classification="spark",
+        #             configuration_properties={"maximizeResourceAllocation": "true"},
+        #         ),
+        #     ],
+        #     log_uri=f"s3://{self.s3_log_bucket.bucket_name}/elasticmapreduce/",
+        #     release_label="emr-6.0.0",
+        #     visible_to_all_users=True,
+        #     # the job to be done
+        #     steps=[
+        #         emr.CfnCluster.StepConfigProperty(
+        #             hadoop_jar_step=emr.CfnCluster.HadoopJarStepConfigProperty(
+        #                 jar="command-runner.jar",
+        #                 args=[
+        #                     "spark-submit",
+        #                     "--deploy-mode",
+        #                     "cluster",
+        #                     f"s3://{self.s3_script_bucket.bucket_name}/{spark_script}",
+        #                 ],
+        #             ),
+        #             name="bronze_to_silver",
+        #             action_on_failure="CONTINUE",
+        #         ),
+        #     ],
+        # )
