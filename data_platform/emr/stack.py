@@ -13,7 +13,6 @@ class EMRStack(core.Stack):
         self,
         scope: core.Construct,
         common_stack: CommonResourcesStack,
-        spark_script: str,
         **kwargs,
     ) -> None:
         self.deploy_env = active_environment
@@ -23,18 +22,18 @@ class EMRStack(core.Stack):
         super().__init__(scope, id=f"{self.deploy_env.value}-emr-stack", **kwargs)
 
         # enable reading scripts from s3 bucket
-        read_scripts_policy = iam.PolicyStatement(
+        self.read_scripts_policy = iam.PolicyStatement(
             effect=iam.Effect.ALLOW,
             actions=[
                 "s3:GetObject",
             ],
             resources=[f"arn:aws:s3:::{self.s3_script_bucket.bucket_name}/*"],
         )
-        read_scripts_document = iam.PolicyDocument()
-        read_scripts_document.add_statements(read_scripts_policy)
+        self.read_scripts_document = iam.PolicyDocument()
+        self.read_scripts_document.add_statements(self.read_scripts_policy)
 
         # emr service role
-        emr_service_role = iam.Role(
+        self.emr_service_role = iam.Role(
             self,
             "emr_service_role",
             assumed_by=iam.ServicePrincipal("elasticmapreduce.amazonaws.com"),
@@ -43,11 +42,11 @@ class EMRStack(core.Stack):
                     "service-role/AmazonElasticMapReduceRole"
                 )
             ],
-            inline_policies=[read_scripts_document],
+            inline_policies=[self.read_scripts_document],
         )
 
         # emr job flow role
-        emr_job_flow_role = iam.Role(
+        self.emr_job_flow_role = iam.Role(
             self,
             "emr_job_flow_role",
             assumed_by=iam.ServicePrincipal("ec2.amazonaws.com"),
@@ -61,7 +60,7 @@ class EMRStack(core.Stack):
         emr_job_flow_profile = iam.CfnInstanceProfile(
             self,
             "emr_job_flow_profile",
-            roles=[emr_job_flow_role.role_name],
+            roles=[self.emr_job_flow_role.role_name],
             instance_profile_name="emrJobFlowProfile",
         )
 

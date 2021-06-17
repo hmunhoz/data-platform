@@ -58,45 +58,45 @@ class CommonResourcesStack(core.Stack):
             **kwargs,
         )
 
-        # EMR Roles
-        self.read_scripts_policy = iam.PolicyStatement(
-            effect=iam.Effect.ALLOW,
-            actions=[
-                "s3:GetObject",
-            ],
-            resources=[f"arn:aws:s3:::{self.s3_script_bucket.bucket_name}/*"],
-        )
-        self.read_scripts_document = iam.PolicyDocument()
-        self.read_scripts_document.add_statements(self.read_scripts_policy)
-
-        # emr service role
-        self.emr_service_role = iam.Role(
-            self,
-            "emr_service_role",
-            assumed_by=iam.ServicePrincipal("elasticmapreduce.amazonaws.com"),
-            managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name(
-                    "service-role/AmazonElasticMapReduceRole"
-                )
-            ],
-            inline_policies=[self.read_scripts_document],
-        )
-
-        # emr job flow role
-        self.emr_job_flow_role = iam.Role(
-            self,
-            "emr_job_flow_role",
-            assumed_by=iam.ServicePrincipal("ec2.amazonaws.com"),
-            managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name(
-                    "service-role/AmazonElasticMapReduceforEC2Role"
-                )
-            ],
-        )
-        # emr job flow profile
-        self.emr_job_flow_profile = iam.CfnInstanceProfile(
-            self,
-            "emr_job_flow_profile",
-            roles=[self.emr_job_flow_role.role_name],
-            instance_profile_name="emrJobFlowProfile",
-        )
+        # # EMR Roles
+        # self.read_scripts_policy = iam.PolicyStatement(
+        #     effect=iam.Effect.ALLOW,
+        #     actions=[
+        #         "s3:GetObject",
+        #     ],
+        #     resources=[f"arn:aws:s3:::{self.s3_script_bucket.bucket_name}/*"],
+        # )
+        # self.read_scripts_document = iam.PolicyDocument()
+        # self.read_scripts_document.add_statements(self.read_scripts_policy)
+        #
+        # # emr service role
+        # self.emr_service_role = iam.Role(
+        #     self,
+        #     "emr_service_role",
+        #     assumed_by=iam.ServicePrincipal("elasticmapreduce.amazonaws.com"),
+        #     managed_policies=[
+        #         iam.ManagedPolicy.from_aws_managed_policy_name(
+        #             "service-role/AmazonElasticMapReduceRole"
+        #         )
+        #     ],
+        #     inline_policies=[self.read_scripts_document],
+        # )
+        #
+        # # emr job flow role
+        # self.emr_job_flow_role = iam.Role(
+        #     self,
+        #     "emr_job_flow_role",
+        #     assumed_by=iam.ServicePrincipal("ec2.amazonaws.com"),
+        #     managed_policies=[
+        #         iam.ManagedPolicy.from_aws_managed_policy_name(
+        #             "service-role/AmazonElasticMapReduceforEC2Role"
+        #         )
+        #     ],
+        # )
+        # # emr job flow profile
+        # self.emr_job_flow_profile = iam.CfnInstanceProfile(
+        #     self,
+        #     "emr_job_flow_profile",
+        #     roles=[self.emr_job_flow_role.role_name],
+        #     instance_profile_name="emrJobFlowProfile",
+        # )

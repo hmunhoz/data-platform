@@ -133,12 +133,31 @@ scripts bucket:
 ./scripts/upload_to_s3.py
 ```
 
+Deploy the airflow stack that runs the spark jobs. We are currently scheduling our script to run only once.  
+**NOTE: Managed Apache Airflow (MWAA) is not free**
+_This process can take a few minutes_
+
 ```
 $ make deploy-airflow
 ```
 
 Our Spark job will partition and load our data to the s3 silver layer.  
-Now it is time to set up our Redshift data warehouse.
+
+Now it is time to set up our Redshift data warehouse.  
+
+Navigate to IAM Console and select the `Roles` option.  
+Search for the `production-redshift-stack` role and select it.
+Copy the `role arn`.
+
+Open Redshift Query Editor panel, and run the following query:
+
+```sqlite-psql
+CREATE EXTERNAL SCHEMA data_lake_silver
+FROM DATA CATALOG
+DATABASE 'glue_ecommerce_production_data_lake_silver'
+REGION <your_region_name_here : eg 'us-east-1'>
+IAM_ROLE <role_arn example 'arn:aws:iam::0111848002:role/production-redshift-stack-iamproductionredshiftspe-19AHN3Q0'>
+```
 
 Now that our data warehouse is in place, we can define our data model with dbt. You can follow the steps described in
 the dbt_project/README.md file.
@@ -149,5 +168,7 @@ You can use Metabase as the BI tool by following the instructions in the metabas
 
 ## Improvements
 
+- Automatic deploy inside docker container
 - Use PySpark Streaming + Delta Lake/Apache Hudi: This would make ingestion to data lake silver layer more robust.
 - Ingest events with Kafka or Kinesis.
+- Add ci/cd and tests

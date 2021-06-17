@@ -8,7 +8,7 @@ from airflow.contrib.sensors.emr_step_sensor import EmrStepSensor
 # from airflow.providers.amazon.aws.operators.emr_add_steps import EmrAddStepsOperator
 # from airflow.providers.amazon.aws.sensors.emr_step import EmrStepSensor
 #
-# from airflow.utils.dates import days_ago
+from airflow.utils.dates import days_ago
 from datetime import timedelta
 import os
 import boto3

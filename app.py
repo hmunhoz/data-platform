@@ -35,7 +35,7 @@ glue_stack = GlueCatalogStack(
     data_lake_gold_bucket=data_lake_stack.data_lake_gold_bucket,
 )
 athena_stack = AthenaStack(app)
-# emr_stack = EMRStack(app, common_stack, "b2s_geolocation.py")
+emr_stack = EMRStack(app, common_stack)
 
 redshift_stack = RedshiftStack(
     app,
