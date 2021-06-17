@@ -1,4 +1,28 @@
-Welcome to your new dbt project!
+First, we need to configure redshift's credentials in the ~/.dbt/profiles.yml file (you may need to create it manually).
+
+```
+$ mkdir ~/.dbt
+```
+
+Inside the dbt directory, create the profiles.yml file and populate it as such:
+
+```yaml
+redshift:
+  target: prod
+  outputs:
+    prod:
+      type: redshift
+      threads: 2
+      host: <Insert host>
+      port: 5439
+      user: admin
+      dbname: dw
+      pass: <insert password>
+      schema: analytics_gold
+```
+
+Don't forget to modify the fields with their proper values. You can get them on the AWS Secrets Manager console.
+
 
 ### Using the starter project
 

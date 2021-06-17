@@ -15,6 +15,14 @@ deploy-airflow:
 	export ENVIRONMENT=PRODUCTION && \
 	cdk deploy production-airflow-stack
 
+data:
+
+	export ENVIRONMENT=PRODUCTION && \
+	echo "Activating DMS" && \
+	python3 ./scripts/trigger_dms.py && \
+	echo "Inserting data to RDS" && \
+	python3 ./scripts/insert_to_rds.py
+
 destroy-stack:
 
 	export ENVIRONMENT=PRODUCTION  && \

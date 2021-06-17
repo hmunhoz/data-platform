@@ -98,13 +98,37 @@ Make sure you also have [AWS CLI](https://docs.aws.amazon.com/cli/latest/usergui
 Now, you can issue the following commands in order to deploy the AWS Stack/Infrastructure.
 
 ```
-$ make deploy-production
+$ make deploy-core
 ```
 
+This will deploy the infrastructure resources in AWS, except Airflow/EMR.  
 
+Now, we need to populate our platform with data. For this, run the command:
+
+```
+$ make data
+```
+
+This step will activate the DMS replication task, and insert data to the RDS database.
+
+Now that we have inserted data to RDS, and DMS has automatically copied it to our bronze data lake s3 bucket, we can
+deploy Airflow service (with our Spark job).
+
+```
+$ make deploy-airflow
+```
+
+Our Spark job will partition and load our data to the s3 silver layer.  
+Now it is time to set up our Redshift data warehouse.
+
+Now that our data warehouse is in place, we can define our data model with dbt. You can follow the steps described in
+the dbt_project/README.md file.
+
+After running our dbt models, you can connect to our data warehouse using the BI tool of your choice.  
+Use the same credentials available on AWS Secrets Manager, and start exploring our curated data.  
+You can use Metabase as the BI tool by following the instructions in the metabase/README.md file. 
 
 ## Improvements
 
-- Use PySpark Streaming + Delta Lake/Apache Hudi: This would make ingestion to datalake silver layer more robust.
-- Ingest events with Kafka or Kinesis
-- Model data as star schema in dbt, instead of using OBT.
+- Use PySpark Streaming + Delta Lake/Apache Hudi: This would make ingestion to data lake silver layer more robust.
+- Ingest events with Kafka or Kinesis.
