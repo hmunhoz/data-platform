@@ -149,6 +149,10 @@ Navigate to IAM Console and select the `Roles` option.
 Search for the `production-redshift-stack` role and select it.
 Copy the `role arn`.
 
+![data-platform-diagram](images/iam_panel.png)
+
+![data-platform-diagram](images/iam_role_arn.png)
+
 Open Redshift Query Editor panel, and run the following query:
 
 ```sqlite-psql
