@@ -95,6 +95,10 @@ $ pip install -r requirements.txt
 
 Make sure you also have [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) and [AWS CDK](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html) installed, and a valid [AWS account configured](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html).
 
+The first thing we have to do is create the DMS role. Unfortunately, we have to do it manually.
+To do so, run the shell script `config.sh`, located at `./data_platform/dms/`. It will create the necessary roles with
+AWS cli.
+
 Now, you can issue the following commands in order to deploy the AWS Stack/Infrastructure.
 
 ```
@@ -103,13 +107,23 @@ $ make deploy-core
 
 This will deploy the infrastructure resources in AWS, except Airflow/EMR.  
 
-Now, we need to populate our platform with data. For this, run the command:
+Before we insert data to the database, we need to start our DMS replication task.
+You can do it by starting it manually on the AWS DMS Replication Task console, or by running the script shell script 
+```
+./data_platform/trigger_dms.py
+```
+
+Please make sure that the replication task has properly started. 
+
+Now, we need to populate our platform with data. For this, run the python script
+```
+./data_platform/insert_to_rds.py
+```
 
 ```
 $ make data
 ```
 
-This step will activate the DMS replication task, and insert data to the RDS database.
 
 Now that we have inserted data to RDS, and DMS has automatically copied it to our bronze data lake s3 bucket, we can
 deploy Airflow service (with our Spark job).

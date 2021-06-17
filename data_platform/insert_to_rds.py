@@ -4,11 +4,11 @@ import requests
 import psycopg2
 
 from data_platform.definitions import db_name, db_password, db_username
-from definitions import table_names_list, sql_list, url_list
+from data_platform.data_definitions import table_names_list, sql_list, url_list
 
 
 rds = boto3.client('rds')
-instance = rds.describe_db_instances(DBInstanceIdentifier='rds-production-ecommerce-db')
+instances = rds.describe_db_instances(DBInstanceIdentifier='rds-production-ecommerce-db')
 rds_host = instances.get('DBInstances')[0]['Endpoint']['Address']
 
 # CONNECTION PARAMS
