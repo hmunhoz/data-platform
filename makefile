@@ -7,38 +7,16 @@ deploy-core:
 	cdk bootstrap && \
 	cdk deploy production-common-stack production-data-lake-stack \
 	 	production-rds-stack production-dms-stack production-glue-stack production-athena-stack \
+	 	production-redshift-stack production-emr-stack
 		--require-approval never
 
-insert-data:
+deploy-airflow:
 
+	export ENVIRONMENT=PRODUCTION && \
+	cdk deploy production-airflow-stack
 
+destroy-stack:
 
-
-deploy-dev:
-
-	export ENVIRONMENT=DEVELOP  && \
-	cdk bootstrap && \
-	cdk deploy "*" \
-		--require-approval never
-
-deploy-staging:
-
-	export ENVIRONMENT=STAGING  && \
-	cdk bootstrap && \
-	cdk deploy "*" \
-		--require-approval never
-
-deploy-production:
-
-	export ENVIRONMENT=PRODUCTION  && \
-	cdk bootstrap && \
-	cdk deploy "*" \
-		--require-approval never
-
-synth-production:
-	export ENVIRONMENT=PRODUCTION  && \
-	cdk synth
-
-destroy-production:
 	export ENVIRONMENT=PRODUCTION  && \
 	cdk destroy "*" --force
+

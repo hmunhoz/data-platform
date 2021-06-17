@@ -1,10 +1,15 @@
 import io
-
+import boto3
 import requests
 import psycopg2
 
 from data_platform.definitions import db_name, db_password, db_username
 from definitions import table_names_list, sql_list, url_list
+
+
+rds = boto3.client('rds')
+instance = rds.describe_db_instances(DBInstanceIdentifier='rds-production-ecommerce-db')
+rds_host = instances.get('DBInstances')[0]['Endpoint']['Address']
 
 # CONNECTION PARAMS
 dsn = (
@@ -17,7 +22,7 @@ dsn = (
         user=db_username,
         password=db_password,
         port=5432,
-        host="rds-production-ecommerce-db.c8xsxbqsw6zh.us-east-1.rds.amazonaws.com",
+        host=rds_host
     )
 )
 
