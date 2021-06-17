@@ -106,27 +106,32 @@ $ make deploy-core
 ```
 
 This will deploy the infrastructure resources in AWS, except Airflow/EMR.  
-
-Before we insert data to the database, we need to start our DMS replication task.
-You can do it by starting it manually on the AWS DMS Replication Task console, or by running the script shell script 
-```
-./data_platform/trigger_dms.py
-```
-
-Please make sure that the replication task has properly started. 
+_NOTE : This can take a while, as RDS usually requires 5-15 minutes._
 
 Now, we need to populate our platform with data. For this, run the python script
+
 ```
 ./data_platform/insert_to_rds.py
 ```
 
+Now that we have inserted data to RDS, we need to start our DMS replication task.
+You can do it by starting it manually on the AWS DMS Replication Task console, or by running the script shell script 
+
 ```
-$ make data
+./data_platform/trigger_dms.py
 ```
 
+Before proceeding to next steps, please make sure that the replication task has properly started,
+by visiting DMS services on the AWS console.
 
-Now that we have inserted data to RDS, and DMS has automatically copied it to our bronze data lake s3 bucket, we can
+Now that DMS has automatically copied our data from Postgres to our bronze data lake s3 bucket, we can
 deploy Airflow service (with our Spark job).
+
+We need to have our Spark code in an S3 bucket. Start by running the script that uploads the necessary files to the
+scripts bucket: 
+```
+./scripts/upload_to_s3.py
+```
 
 ```
 $ make deploy-airflow

@@ -148,6 +148,17 @@ class AirflowStack(core.Stack):
                     ],
                     resources=[f"arn:aws:sqs:{self.region}:*:airflow-celery-*"],
                 ),
+                iam.PolicyStatement(
+                    actions=[
+                        "cloudformation:Describe*",
+                        "cloudformation:EstimateTemplateCost",
+                        "cloudformation:Get*",
+                        "cloudformation:List*",
+                        "cloudformation:ValidateTemplate",
+                        "cloudformation:Detect*"
+                    ],
+                    resources=["*"]
+                ),
             ],
         )
 
