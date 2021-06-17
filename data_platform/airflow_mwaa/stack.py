@@ -163,6 +163,11 @@ class AirflowStack(core.Stack):
         )
 
         self.execution_role.attach_inline_policy(self.execution_policy)
+        self.execution_role.add_managed_policy(
+            policy=iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "AmazonElasticMapReduceFullAccess"
+                )
+        )
 
         with ZipFile("data_platform/airflow_mwaa/resources.zip", "w") as zipObj2:
             zipObj2.write(

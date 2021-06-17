@@ -57,7 +57,7 @@ class EMRStack(core.Stack):
             ],
         )
         # emr job flow profile
-        emr_job_flow_profile = iam.CfnInstanceProfile(
+        self.emr_job_flow_profile = iam.CfnInstanceProfile(
             self,
             "emr_job_flow_profile",
             roles=[self.emr_job_flow_role.role_name],

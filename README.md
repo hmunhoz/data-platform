@@ -80,7 +80,7 @@ In order to create the virtualenv, it assumes that there is a `python3`executabl
 package
 
 
-After the init process completes and the virtualenv is created, you can use the following
+After the init process completes, and the virtualenv is created, you can use the following
 step to activate your virtualenv.
 
 ```
@@ -140,6 +140,10 @@ _This process can take a few minutes_
 ```
 $ make deploy-airflow
 ```
+
+You can open the airflow UI by entering the Managed Apache Airflow panel in AWS Console.
+
+![mwaa](images/mwaa_panel.png)
 
 Our Spark job will partition and load our data to the s3 silver layer.  
 
