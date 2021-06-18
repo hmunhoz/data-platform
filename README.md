@@ -216,7 +216,7 @@ Open Redshift Query Editor panel, and run the following query:
 CREATE EXTERNAL SCHEMA data_lake_silver
 FROM DATA CATALOG
 DATABASE 'glue_ecommerce_production_data_lake_silver'
-REGION <your_region_name_here : eg 'us-east-1'>
+REGION <your_region_name_here example 'us-east-1'>
 IAM_ROLE <role_arn example 'arn:aws:iam::0111848002:role/production-redshift-stack-iamproductionredshiftspe-19AHN3Q0'>
 ```
 
