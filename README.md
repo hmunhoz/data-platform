@@ -29,6 +29,57 @@ The tables _olist_orders_dataset_ and _olist_order_items_dataset_ compose what w
 
 ## Methodology
 
+Our project starts with the task of replicating data from a production database (or read replica), into storage.
+For data replication, we make use of `AWS Data Migration Services` capabilities. It creates an `replication instance`, 
+that alleviates the cost of consulting and replicating a database. 
+The service is configured in the `full load + change data capture` mode, which first creates a full-load replica of the
+database and then keeps listening for changes that need to be reflected in the copied files.
+As for storage, we make use of s3 buckets due to its simplicity, cost, and ease of integration with other AWS services.  
+
+The first s3 layer `bronze / raw layer`, contains the copy of the database data as is. This helps in tracing the
+accuracy of future transformations. These transformations are made with `PySpark` code that runs in an `EMR Cluster`,
+which is scheduled and controlled by `Airflow`. Most of the transformations are correcting data types and partitioning
+by date, which helps with performance when querying. The transformed data is persisted to the `silver / staged` 
+s3 bucket.
+
+With our data partitioned, we proceed to the creation of the `Analytics layer`, which is composed by 
+`Glue (Catalog and Crawlers)`, `Athena`, and `Redshift`.  
+The `Glue Crawlers` run on a schedule and keep the metadata up to date. This creates a `data catalog` which can then be
+consulted.  
+`Athena` is a serverless query service, which allows us to query our data from S3 using Presto SQL. This layer is
+particularly useful for more experienced users, such as Data Engineers, Analysts and Scientists, for allowing the query
+of raw data. Since you only pay for the data scanned, it should probably be avoided by novice users that write 
+unoptimized queries.
+Finally, we integrate `Redshift` as our data warehouse engine. It will consume s3 data (silver layer) 
+by using the data catalog.
+
+Even though our silver layer could be queried for useful information, it is not standardized. Also, users may be 
+required to write complex queries in order to generate insights and reports, and business logic could be implemented 
+differently (and sometimes incorrectly) by different users. To solve this, we use `dbt` to model our data.
+In a `dbt` project, we can standardize column names, define relationships between tables, transform data, document and 
+test our infrastructure. In this project, we use it to stage our data lake information, and then model our `curated (gold)`
+zone. Ideally, this zone would contain views and tables of the most important queries made by an organization, creating 
+a single source of truth.  
+In this project, the data was modeled into wide tables, due to the [performance gains](https://fivetran.com/blog/star-schema-vs-obt), 
+and the fact that it makes it more digestible for general consumption across the company (as it avoids the need for
+complex joins). It could have been easily modeled into facts and dimension tables.
+
+Having our curated schema materialized into our data warehouse, we now can choose any BI tool for exploring different 
+layers. With the data mart / wide table / obt for _orders_, for example, we can start to explore different aspects of a
+business, creating reports for its revenue (GMV - Gross Merchandise Value), average reviews and seller performance.
+
+**GMV Dashboard**  
+_See below one example of a dashboard: it shows some main information for an e-commerce platform, such as its revenue,
+best-selling categories, top merchants and payment methods. We can create a drill-down and check seller specific info._
+
+![gmv dashboard](images/gmv_dashboard.png)
+
+**Seller Dashboard**
+_We can link dashboard to explore more specific information. In the below example, we can see how the seller has
+performed over time, their best-selling categories, and top/bottom rated products._
+
+![seller dashboard](images/seller_dashboard.png)
+
 
 ## Project structure
 
@@ -45,7 +96,9 @@ The tables _olist_orders_dataset_ and _olist_order_items_dataset_ compose what w
 │   ├── rds             <- RDS IaC resources.
 │   ├── redshift        <- Redshift data warehouse cluster IaC resources.
 │   ├── common_stack.py <- Network Resources and Default Roles IaC resources.
-│   └── definitions.py  <- Default RDS settings.
+│   ├── data_definitions.py  <- Database schemas definitions to be inserted into RDS.
+│   ├── definitions.py  <- Default RDS Parameters.
+│   └── insert_to_rds.py <- Script to insert ecommerce data into newly created database. 
 │
 ├── dbt_project         <- directory with dbt files and resources (check models/)
 │
@@ -106,7 +159,7 @@ $ make deploy-core
 ```
 
 This will deploy the infrastructure resources in AWS, except Airflow/EMR.  
-_NOTE : This can take a while, as RDS usually requires 5-15 minutes._
+_NOTE : This can take a while, as RDS usually requires 5-15 minutes to spin up._
 
 Now, we need to populate our platform with data. For this, run the python script
 

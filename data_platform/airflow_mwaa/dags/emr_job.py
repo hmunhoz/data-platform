@@ -31,6 +31,7 @@ buckets = [resource for resource in common_resources if resource['ResourceType']
 bucket = buckets[0]['PhysicalResourceId']
 
 spark_script_path = f's3://{bucket}/' + 'bronze_to_silver_processing.py'
+bootstrap_file = f's3://{bucket}/' + 'bronze_to_silver_processing.py'
 
 # EMR Roles
 emr_stack = cf.describe_stack_resources(
@@ -45,7 +46,7 @@ service_role = service_roles[0]['PhysicalResourceId']
 
 # EMR JobFlowRole
 job_flow_roles = [role for role in emr_roles if 'emrjobflowrole' in role['LogicalResourceId']]
-job_flow_role = service_roles[0]['PhysicalResourceId']
+job_flow_role = job_flow_roles[0]['PhysicalResourceId']
 
 
 DEFAULT_ARGS = {
@@ -90,7 +91,7 @@ JOB_FLOW_OVERRIDES = {
             'BootstrapActionConfig': {
                 'Name': 'install_python_libraries',
                 'ScriptBootstrapAction': {
-                    'Path': 's3://script-bucket-production-034832733803-us-east-1/bootstrap_emr.sh',
+                    'Path': bootstrap_file
                 }
             }
         },
@@ -114,7 +115,7 @@ SPARK_STEPS = [
 with DAG(
     dag_id=DAG_ID,
     default_args=DEFAULT_ARGS,
-    dagrun_timeout=timedelta(hours=2),
+    dagrun_timeout=timedelta(minutes=15),
     start_date=days_ago(1),
     schedule_interval='@once',
     tags=['emr'],

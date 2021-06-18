@@ -60,10 +60,11 @@ class AirflowStack(core.Stack):
 
         self.airflow_bucket = s3.Bucket(
             self,
-            id=f"s3-airflow-{self.deploy_env.value}",
-            bucket_name=f"s3-airflow-{self.deploy_env.value}-{self.account}-{self.region}",
+            id=f"airflow-{self.deploy_env.value}-bucket",
+            bucket_name=f"airflow-{self.deploy_env.value}-{self.account}-{self.region}",
             removal_policy=core.RemovalPolicy.DESTROY,
-            block_public_access=s3.BlockPublicAccess.BLOCK_ALL
+            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
+            versioned=True
         )
 
         self.execution_role = iam.Role(
