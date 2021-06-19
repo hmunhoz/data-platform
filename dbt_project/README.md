@@ -4,7 +4,7 @@ First, we need to configure redshift's credentials in the ~/.dbt/profiles.yml fi
 $ mkdir ~/.dbt
 ```
 
-Inside the dbt directory, create the profiles.yml file and populate it as such:
+Inside the `.dbt` directory, create the profiles.yml file and populate it as such:
 
 ```yaml
 redshift:
@@ -22,18 +22,8 @@ redshift:
 ```
 
 Don't forget to modify the fields with their proper values. You can get them on the AWS Secrets Manager console.
+If you need more assistance, take a look at the [docs](https://docs.getdbt.com/docs/introduction#database-connections).
 
-
-### Using the starter project
-
-Try running the following commands:
-- dbt run
-- dbt test
-
-
-### Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-- Join the [chat](http://slack.getdbt.com/) on Slack for live discussions and support
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
+After the proper configuration, you can run the following commands from inside this directory:
+* dbt docs serve <- serve the documentation for local consumption
+* dbt run        <- run the steps defined inside the _models/_ directory
