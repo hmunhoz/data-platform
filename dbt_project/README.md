@@ -25,5 +25,5 @@ Don't forget to modify the fields with their proper values. You can get them on 
 If you need more assistance, take a look at the [docs](https://docs.getdbt.com/docs/introduction#database-connections).
 
 After the proper configuration, you can run the following commands from inside this directory:
-* dbt docs serve <- serve the documentation for local consumption
-* dbt run        <- run the steps defined inside the _models/_ directory
+* `dbt docs serve` <- serve the documentation for local consumption
+* `dbt run`        <- run the steps defined inside the _models/_ directory
